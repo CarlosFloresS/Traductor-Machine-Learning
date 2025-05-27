@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Traductor ML</string>
+
+    <string name="et_idioma_origen_hint">Ingrese texto</string>
+    <string name="tv_idioma_destino_label">Traducción</string>
+    <string name="btn_elegir_idioma">Español</string>
+    <string name="btn_idioma_elegido">Inglés</string>
+    <string name="btn_traducir">Traducir</string>
+
+    <!-- Descripción para accesibilidad -->
+    <string name="desc_traductor_logo">Logotipo de Traductor ML</string>
+    <string name="desc_cambiar_idioma">Cambiar idioma</string>
+</resources>

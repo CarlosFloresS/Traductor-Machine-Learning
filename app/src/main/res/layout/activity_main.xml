@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp"
+    tools:context=".MainActivity">
+
+    <ScrollView
+        android:id="@+id/scroll_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/btn_traducir">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Logo centrado -->
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/traductor_img"
+                android:contentDescription="@string/desc_traductor_logo" />
+
+            <!-- Campo de texto de origen -->
+            <EditText
+                android:id="@+id/et_idioma_origen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="start"
+                android:hint="@string/et_idioma_origen_hint"
+                android:minHeight="100dp"
+                android:textSize="18sp" />
+
+            <!-- Resultado traducido -->
+            <TextView
+                android:id="@+id/tv_idioma_destino"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/tv_idioma_destino_label"
+                android:textSize="18sp"
+                android:textStyle="bold|italic" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Fila de botones para elegir idiomas -->
+    <LinearLayout
+        android:id="@+id/botones_linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/btn_traducir"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_elegir_idioma"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_elegir_idioma"
+            app:cornerRadius="10dp" />
+
+        <ImageButton
+            android:id="@+id/btn_swap_idiomas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/desc_cambiar_idioma"
+            android:padding="12dp"
+            android:src="@drawable/ic_cambiar" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_idioma_elegido"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_idioma_elegido"
+            app:cornerRadius="10dp" />
+
+    </LinearLayout>
+
+    <!-- Botón Traducir fijo al pie -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_traducir"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:icon="@drawable/ic_traducir"
+        app:iconPadding="8dp"
+        android:text="@string/btn_traducir"
+        app:cornerRadius="10dp" />
+
+</RelativeLayout>
