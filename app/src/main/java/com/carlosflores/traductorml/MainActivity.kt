@@ -1,5 +1,6 @@
 package com.carlosflores.traductorml
 
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -13,20 +14,24 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.carlosflores.traductorml.Modelo.Idioma
 import com.google.android.material.button.MaterialButton
+import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.Translation
+import com.google.mlkit.nl.translate.Translator
+import com.google.mlkit.nl.translate.TranslatorOptions
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var et_idioma_origen : EditText
-    private lateinit var tv_idioma_destino : TextView
-    private lateinit var btn_elegir_idioma : MaterialButton
-    private lateinit var btn_idioma_elegido : MaterialButton
-    private lateinit var btn_traducir : MaterialButton
+    private lateinit var et_idioma_origen: EditText
+    private lateinit var tv_idioma_destino: TextView
+    private lateinit var btn_elegir_idioma: MaterialButton
+    private lateinit var btn_idioma_elegido: MaterialButton
+    private lateinit var btn_traducir: MaterialButton
 
-    private var idiomaArrayList : ArrayList<Idioma> ?= null
+    private var idiomaArrayList: ArrayList<Idioma>? = null
 
-    companion object{
+    companion object {
         private const val REGISTRO = "Mis_registros"
     }
 
@@ -36,41 +41,53 @@ class MainActivity : AppCompatActivity() {
     private var codigo_idioma_destino = "en"
     private var titulo_idioma_destino = "Inglés"
 
+    private lateinit var translateOptions: TranslatorOptions
+    private lateinit var translator: Translator
+    private lateinit var progressDialog: ProgressDialog
+
+    private var texto_idioma_origen = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         inicializarVistas()
         idiomasDisponibles()
 
-        btn_elegir_idioma.setOnClickListener{
+        btn_elegir_idioma.setOnClickListener {
             //Toast.makeText(applicationContext, "Elegir idioma", Toast.LENGTH_SHORT).show()
             elegirIdiomaOrigen()
         }
 
-        btn_idioma_elegido.setOnClickListener{
+        btn_idioma_elegido.setOnClickListener {
             //Toast.makeText(applicationContext, "Idioma elegido", Toast.LENGTH_SHORT).show()
             elegirIdiomaDestino()
         }
 
-        btn_traducir.setOnClickListener{
-            Toast.makeText(applicationContext, "Traducir", Toast.LENGTH_SHORT).show()
+        btn_traducir.setOnClickListener {
+            //Toast.makeText(applicationContext, "Traducir", Toast.LENGTH_SHORT).show()
+            validarDatos()
+
         }
     }
 
-    private fun inicializarVistas(){
+    private fun inicializarVistas() {
         et_idioma_origen = findViewById(R.id.et_idioma_origen)
         tv_idioma_destino = findViewById(R.id.tv_idioma_destino)
         btn_elegir_idioma = findViewById(R.id.btn_elegir_idioma)
         btn_idioma_elegido = findViewById(R.id.btn_idioma_elegido)
         btn_traducir = findViewById(R.id.btn_traducir)
+
+        progressDialog = ProgressDialog(this)
+        progressDialog.setTitle("Por favor espere")
+        progressDialog.setCanceledOnTouchOutside(false)
     }
 
-    private fun idiomasDisponibles(){
+    private fun idiomasDisponibles() {
         idiomaArrayList = ArrayList()
 
         val listaCodigoIdiomas = TranslateLanguage.getAllLanguages()
 
-        for (codigo_lenguaje in listaCodigoIdiomas){
+        for (codigo_lenguaje in listaCodigoIdiomas) {
             val titulo_lenguaje = Locale(codigo_lenguaje).displayLanguage
             val modeloIdioma = Idioma(codigo_lenguaje, titulo_lenguaje)
 
@@ -81,11 +98,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun elegirIdiomaOrigen(){
+    private fun elegirIdiomaOrigen() {
         val popUpMenu = PopupMenu(this, btn_elegir_idioma)
 
-        for (i in idiomaArrayList!!.indices){
-         popUpMenu.menu.add(Menu.NONE, i, i, idiomaArrayList!![i].titulo_idioma)
+        for (i in idiomaArrayList!!.indices) {
+            popUpMenu.menu.add(Menu.NONE, i, i, idiomaArrayList!![i].titulo_idioma)
         }
 
         popUpMenu.show()
@@ -105,10 +122,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun elegirIdiomaDestino(){
+    private fun elegirIdiomaDestino() {
         val popUpMenu = PopupMenu(this, btn_idioma_elegido)
 
-        for (i in idiomaArrayList!!.indices){
+        for (i in idiomaArrayList!!.indices) {
             popUpMenu.menu.add(Menu.NONE, i, i, idiomaArrayList!![i].titulo_idioma)
         }
 
@@ -127,5 +144,49 @@ class MainActivity : AppCompatActivity() {
             false
         }
     }
+
+    private fun validarDatos() {
+        texto_idioma_origen = et_idioma_origen.text.toString().trim()
+        if (texto_idioma_origen.isEmpty()) {
+            Toast.makeText(applicationContext, "Ingrese texto", Toast.LENGTH_SHORT).show()
+        } else {
+            traducirTexto()
+        }
+
+    }
+
+    private fun traducirTexto() {
+        progressDialog.setMessage("Traduciendo texto...")
+        progressDialog.show()
+
+        translateOptions = TranslatorOptions.Builder()
+            .setSourceLanguage(codigo_idioma_origen)
+            .setTargetLanguage(codigo_idioma_destino)
+            .build()
+        translator = Translation.getClient(translateOptions)
+
+        val downloadConditions = DownloadConditions.Builder().requireWifi().build()
+
+        translator.downloadModelIfNeeded(downloadConditions)
+            .addOnSuccessListener {
+                Log.d(REGISTRO, "El paquete de traducción esta listo")
+                progressDialog.setMessage("Traduciendo texto...")
+                translator.translate(texto_idioma_origen)
+                    .addOnSuccessListener { texto_traducido ->
+                        Log.d(REGISTRO, "texto_traducido: $texto_traducido")
+                        progressDialog.dismiss()
+                        tv_idioma_destino.text = texto_traducido
+                    }
+                    .addOnFailureListener { e ->
+                        progressDialog.dismiss()
+                        Toast.makeText(applicationContext, "${e}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(applicationContext, "${e}", Toast.LENGTH_SHORT).show()
+
+            }
+    }
+
 
 }
