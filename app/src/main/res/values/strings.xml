@@ -10,4 +10,7 @@
     <!-- Descripción para accesibilidad -->
     <string name="desc_traductor_logo">Logotipo de Traductor ML</string>
     <string name="desc_cambiar_idioma">Cambiar idioma</string>
+
+    <string name="limpiar_texto">Limpiar</string>
+
 </resources>
