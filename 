@@ -1,0 +1,11 @@
+[33mcommit 43845b946816feb151b56e44d1dd5263272e0021[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: Carlos A <i202225428@cibertec.edu.pe>
+Date:   Tue May 27 20:24:49 2025 -0500
+
+    Crea modelo idioma, generamos funciones para obtener y elegir idioma
+
+[33mcommit 67808954cc5aa0cb72beccbcf4cecfa2a0924445[m
+Author: Carlos A <i202225428@cibertec.edu.pe>
+Date:   Mon May 26 20:06:28 2025 -0500
+
+    Initial commit
